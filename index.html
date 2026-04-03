@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brasil Music PRO</title>
+<title>Brasil Music</title>
 <style>
 body {
   margin:0;
@@ -12,38 +12,40 @@ body {
   color:white;
 }
 
+/* HEADER */
 header {
-  padding:20px;
-  background: linear-gradient(90deg,#1DB954,#0d3d1f);
+  padding:15px;
+  background:#1DB954;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
 }
 
+/* BUSCA */
 .search {
-  text-align:center;
-  margin:10px;
+  padding:10px;
 }
 
 .search input {
-  width:80%;
+  width:100%;
   padding:12px;
   border-radius:20px;
   border:none;
-  font-size:16px;
 }
 
+/* GRID */
 .container {
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
+  display:grid;
+  grid-template-columns: repeat(2,1fr);
+  gap:10px;
+  padding:10px;
 }
 
 .card {
-  width:160px;
-  margin:10px;
   background:#181818;
   border-radius:10px;
   padding:10px;
   text-align:center;
-  cursor:pointer;
 }
 
 .card img {
@@ -51,6 +53,7 @@ header {
   border-radius:8px;
 }
 
+/* PLAYER */
 .player {
   position:fixed;
   bottom:0;
@@ -68,26 +71,18 @@ header {
   color:white;
 }
 
-.progress {
-  width:100%;
-}
 </style>
 </head>
 <body>
-<header>
-<h2>🎧 Brasil Music PRO</h2>
-</header>
+<header>🎧 Brasil Music</header>
 <div class="search">
-<input type="text" id="busca" placeholder="🔍 Buscar artista..." onkeyup="filtrar()">
+<input type="text" placeholder="🔍 Buscar artista..." onkeyup="buscar(this.value)">
 </div>
 <div class="container" id="lista"></div>
 <div class="player">
-<div id="nomeMusica">Nenhuma música</div>
-<input type="range" id="barra" class="progress" value="0">
-<div>
-<span id="tempoAtual">0:00</span> /
-<span id="tempoTotal">0:00</span>
-</div>
+<div id="tocando">Nada tocando</div>
+<input type="range" id="barra" value="0" style="width:100%">
+<div id="tempo">0:00 / 0:00</div>
 <div class="controls">
 <button onclick="play()">▶</button>
 <button onclick="pause()">⏸</button>
@@ -114,16 +109,16 @@ musicas:[
 }
 ];
 
-let artistaAtual = 0;
-let musicaAtual = 0;
-
+let atual = artistas;
+let artistaIndex = 0;
+let musicaIndex = 0;
 const audio = document.getElementById("audio");
 
-function mostrar(lista){
+function render(lista){
 let html="";
 lista.forEach((a,i)=>{
 html+=`
-<div class="card" onclick="abrir(${i})">
+<div class="card" onclick="tocarArtista(${i})">
 <img src="${a.img}">
 <p>${a.nome}</p>
 </div>`;
@@ -131,22 +126,21 @@ html+=`
 document.getElementById("lista").innerHTML=html;
 }
 
-function filtrar(){
-let valor=document.getElementById("busca").value.toLowerCase();
-let filtrado=artistas.filter(a=>a.nome.toLowerCase().includes(valor));
-mostrar(filtrado);
+function buscar(txt){
+let filtro = artistas.filter(a=>a.nome.toLowerCase().includes(txt.toLowerCase()));
+render(filtro);
 }
 
-function abrir(i){
-artistaAtual=i;
-musicaAtual=0;
+function tocarArtista(i){
+artistaIndex=i;
+musicaIndex=0;
 tocar();
 }
 
 function tocar(){
-let m=artistas[artistaAtual].musicas[musicaAtual];
+let m=artistas[artistaIndex].musicas[musicaIndex];
 audio.src=m.src;
-document.getElementById("nomeMusica").innerText=m.titulo;
+document.getElementById("tocando").innerText=m.titulo;
 audio.play();
 }
 
@@ -154,35 +148,31 @@ function play(){audio.play();}
 function pause(){audio.pause();}
 
 function proxima(){
-musicaAtual++;
-if(musicaAtual>=artistas[artistaAtual].musicas.length) musicaAtual=0;
+musicaIndex++;
+if(musicaIndex>=artistas[artistaIndex].musicas.length) musicaIndex=0;
 tocar();
 }
 
 function anterior(){
-musicaAtual--;
-if(musicaAtual<0) musicaAtual=artistas[artistaAtual].musicas.length-1;
+musicaIndex--;
+if(musicaIndex<0) musicaIndex=artistas[artistaIndex].musicas.length-1;
 tocar();
 }
 
-audio.addEventListener("timeupdate", ()=>{
+audio.ontimeupdate = ()=>{
 let barra=document.getElementById("barra");
-barra.value=(audio.currentTime/audio.duration)*100;
+barra.value=(audio.currentTime/audio.duration)*100 || 0;
 
 let min=Math.floor(audio.currentTime/60);
 let seg=Math.floor(audio.currentTime%60);
-document.getElementById("tempoAtual").innerText=min+":"+("0"+seg).slice(-2);
-
 let minT=Math.floor(audio.duration/60)||0;
 let segT=Math.floor(audio.duration%60)||0;
-document.getElementById("tempoTotal").innerText=minT+":"+("0"+segT).slice(-2);
-});
 
-document.getElementById("barra").addEventListener("input",(e)=>{
-audio.currentTime=(e.target.value/100)*audio.duration;
-});
+document.getElementById("tempo").innerText =
+min+":"+("0"+seg).slice(-2)+" / "+minT+":"+("0"+segT).slice(-2);
+};
 
-mostrar(artistas);
+render(artistas);
 
 </script>
 </body>
