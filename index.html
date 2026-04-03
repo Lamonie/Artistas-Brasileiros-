@@ -1,218 +1,149 @@
-</body>
-</html>
-:::
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brasil Music PRO</title>
-<style>
+  <meta charset="UTF-8">
+  <title>Tigrinho 🎧</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<header>
+  <h1>🐯 Tigrinho</h1>
+</header>
+
+<main>
+  <h2>Recomendado para você</h2>
+
+  <div class="cards">
+
+    <div class="card" onclick="playMusic('Ponta de Faca - Alcymar Monteiro')">
+      <img src="https://i.imgur.com/8Km9tLL.jpg">
+      <p>Ponta de Faca</p>
+      <span>Alcymar Monteiro</span>
+    </div>
+
+    <div class="card" onclick="playMusic('Borbulhas de Amor - Fagner')">
+      <img src="https://i.imgur.com/4YQZ4Yh.jpg">
+      <p>Borbulhas de Amor</p>
+      <span>Fagner</span>
+    </div>
+
+    <div class="card" onclick="playMusic('Sonho Meu')">
+      <img src="https://i.imgur.com/U3vTGjX.jpg">
+      <p>Sonho Meu</p>
+      <span>Samba</span>
+    </div>
+
+  </div>
+</main>
+
+<!-- PLAYER -->
+<div class="player">
+  <div class="info">
+    <p id="musicName">Nenhuma música</p>
+  </div>
+
+  <div class="controls">
+    <button onclick="play()">▶</button>
+    <button onclick="pause()">⏸</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
 body {
-  margin:0;
+  margin: 0;
   font-family: Arial;
-  color:white;
-  overflow-x:hidden;
+  background: #121212;
+  color: white;
 }
 
-/* FUNDO ANIMADO */
-.bg {
-  position:fixed;
-  width:100%;
-  height:100%;
-  background: linear-gradient(270deg, #1DB954, #121212, #1DB954);
-  background-size: 600% 600%;
-  animation: mover 10s ease infinite;
-  z-index:-1;
-}
-
-@keyframes mover {
-  0% {background-position:0% 50%;}
-  50% {background-position:100% 50%;}
-  100% {background-position:0% 50%;}
-}
-
-/* HEADER */
 header {
-  padding:20px;
-  font-size:22px;
-  font-weight:bold;
+  padding: 20px;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-/* BOTÃO START */
-.start {
-  text-align:center;
-  margin:20px;
+h2 {
+  margin-left: 20px;
 }
 
-.start button {
-  padding:15px 30px;
-  font-size:18px;
-  border:none;
-  border-radius:30px;
-  background:#1DB954;
-  color:white;
-}
-
-/* BUSCA */
-.search {
-  padding:10px;
-}
-
-.search input {
-  width:100%;
-  padding:12px;
-  border-radius:20px;
-  border:none;
-}
-
-/* GRID */
-.container {
-  display:grid;
-  grid-template-columns: repeat(2,1fr);
-  gap:10px;
-  padding:10px;
+.cards {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
 }
 
 .card {
-  background:#181818;
-  border-radius:10px;
-  padding:10px;
-  text-align:center;
+  background: #181818;
+  padding: 10px;
+  border-radius: 10px;
+  width: 150px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.card:hover {
+  background: #282828;
+  transform: scale(1.05);
 }
 
 .card img {
-  width:100%;
-  border-radius:8px;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.card p {
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+.card span {
+  font-size: 12px;
+  color: #aaa;
 }
 
 /* PLAYER */
 .player {
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#000;
-  padding:10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #181818;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-top: 1px solid #333;
 }
 
 .controls button {
-  margin:5px;
-  padding:10px;
-  border:none;
-  border-radius:50%;
-  background:#1DB954;
-  color:white;
+  background: #1db954;
+  border: none;
+  color: white;
+  padding: 10px;
+  margin: 0 5px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
-</style>
-</head>
-<body>
-<div class="bg"></div>
-<header>🎧 Brasil Music PRO</header>
-<div class="start">
-<button onclick="iniciar()">🔥 Começar</button>
-</div>
-<div class="search">
-<input type="text" placeholder="🔍 Buscar artista..." onkeyup="buscar(this.value)">
-</div>
-<div class="container" id="lista"></div>
-<div class="player">
-<div id="tocando">Nada tocando</div>
-<input type="range" id="barra" value="0" style="width:100%">
-<div id="tempo">0:00 / 0:00</div>
-<div class="controls">
-<button onclick="play()">▶</button>
-<button onclick="pause()">⏸</button>
-<button onclick="anterior()">⏮</button>
-<button onclick="proxima()">⏭</button>
-</div>
-</div>
-<script>
-
-const artistas = [
-{
-nome:"Gusttavo Lima",
-img:"https://upload.wikimedia.org/wikipedia/commons/0/0b/Gusttavo_Lima.jpg",
-musicas:[
-{titulo:"Balada Boa",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"}
-]
-},
-{
-nome:"Anitta",
-img:"https://upload.wikimedia.org/wikipedia/commons/9/9d/Anitta_2022.jpg",
-musicas:[
-{titulo:"Envolver",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"}
-]
+.controls button:hover {
+  background: #1ed760;
 }
-];
+let currentMusic = "";
 
-let artistaIndex = 0;
-let musicaIndex = 0;
-const audio = document.getElementById("audio");
-
-function iniciar(){
-render(artistas);
+function playMusic(name) {
+  currentMusic = name;
+  document.getElementById("musicName").innerText = name;
 }
 
-function render(lista){
-let html="";
-lista.forEach((a,i)=>{
-html+=`
-<div class="card" onclick="tocarArtista(${i})">
-<img src="${a.img}">
-<p>${a.nome}</p>
-</div>`;
-});
-document.getElementById("lista").innerHTML=html;
+function play() {
+  if (currentMusic === "") {
+    alert("Escolha uma música!");
+  } else {
+    alert("▶ Tocando: " + currentMusic);
+  }
 }
 
-function buscar(txt){
-let filtro = artistas.filter(a=>a.nome.toLowerCase().includes(txt.toLowerCase()));
-render(filtro);
+function pause() {
+  alert("⏸ Música pausada");
 }
-
-function tocarArtista(i){
-artistaIndex=i;
-musicaIndex=0;
-tocar();
-}
-
-function tocar(){
-let m=artistas[artistaIndex].musicas[musicaIndex];
-audio.src=m.src;
-document.getElementById("tocando").innerText=m.titulo;
-audio.play();
-}
-
-function play(){audio.play();}
-function pause(){audio.pause();}
-
-function proxima(){
-musicaIndex++;
-if(musicaIndex>=artistas[artistaIndex].musicas.length) musicaIndex=0;
-tocar();
-}
-
-function anterior(){
-musicaIndex--;
-if(musicaIndex<0) musicaIndex=artistas[artistaIndex].musicas.length-1;
-tocar();
-}
-
-audio.ontimeupdate = ()=>{
-let barra=document.getElementById("barra");
-barra.value=(audio.currentTime/audio.duration)*100 || 0;
-
-let min=Math.floor(audio.currentTime/60);
-let seg=Math.floor(audio.currentTime%60);
-let minT=Math.floor(audio.duration/60)||0;
-let segT=Math.floor(audio.duration%60)||0;
-
-document.getElementById("tempo").innerText =
-min+":"+("0"+seg).slice(-2)+" / "+minT+":"+("0"+segT).slice(-2);
-};
-
-</script>
-</body>
-</html>
-:::
