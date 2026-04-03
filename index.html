@@ -5,63 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brasil Music PRO</title>
 <style>
-
 body {
   margin:0;
   font-family: Arial;
   background:#121212;
   color:white;
-  display:flex;
 }
 
-/* MENU LATERAL */
-.sidebar {
-  width:220px;
-  background:#000;
-  height:100vh;
+header {
   padding:20px;
-  position:fixed;
+  background: linear-gradient(90deg,#1DB954,#0d3d1f);
 }
 
-.sidebar h2 {
-  color:#1DB954;
+.search {
+  text-align:center;
+  margin:10px;
 }
 
-.sidebar button {
-  width:100%;
-  margin:10px 0;
-  padding:10px;
-  border:none;
-  background:#1DB954;
-  color:white;
+.search input {
+  width:80%;
+  padding:12px;
   border-radius:20px;
+  border:none;
+  font-size:16px;
 }
 
-/* CONTEÚDO */
-.main {
-  margin-left:220px;
-  padding:20px;
-  width:100%;
-}
-
-.grid {
+.container {
   display:flex;
   flex-wrap:wrap;
+  justify-content:center;
 }
 
 .card {
-  width:180px;
+  width:160px;
   margin:10px;
   background:#181818;
   border-radius:10px;
   padding:10px;
+  text-align:center;
   cursor:pointer;
-  transition:0.3s;
-}
-
-.card:hover {
-  transform:scale(1.05);
-  background:#282828;
 }
 
 .card img {
@@ -69,7 +51,6 @@ body {
   border-radius:8px;
 }
 
-/* PLAYER */
 .player {
   position:fixed;
   bottom:0;
@@ -90,35 +71,18 @@ body {
 .progress {
   width:100%;
 }
-
-.lista-musicas {
-  margin-top:20px;
-}
-
-.musica {
-  padding:10px;
-  border-bottom:1px solid #333;
-  cursor:pointer;
-}
-
-.musica:hover {
-  background:#222;
-}
-
 </style>
 </head>
 <body>
-<div class="sidebar">
-<h2>🎧 Brasil Music</h2>
-<button onclick="voltar()">🏠 Início</button>
+<header>
+<h2>🎧 Brasil Music PRO</h2>
+</header>
+<div class="search">
+<input type="text" id="busca" placeholder="🔍 Buscar artista..." onkeyup="filtrar()">
 </div>
-<div class="main">
-<h1>Artistas</h1>
-<div class="grid" id="artistas"></div>
-<div class="lista-musicas" id="musicas"></div>
-</div>
+<div class="container" id="lista"></div>
 <div class="player">
-<div id="tocando">Nada tocando</div>
+<div id="nomeMusica">Nenhuma música</div>
 <input type="range" id="barra" class="progress" value="0">
 <div>
 <span id="tempoAtual">0:00</span> /
@@ -131,7 +95,6 @@ body {
 <button onclick="proxima()">⏭</button>
 </div>
 </div>
-</div>
 <script>
 
 const artistas = [
@@ -139,16 +102,14 @@ const artistas = [
 nome:"Gusttavo Lima",
 img:"https://upload.wikimedia.org/wikipedia/commons/0/0b/Gusttavo_Lima.jpg",
 musicas:[
-{titulo:"Balada Boa",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
-{titulo:"Apelido Carinhoso",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"}
+{titulo:"Balada Boa",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"}
 ]
 },
 {
 nome:"Anitta",
 img:"https://upload.wikimedia.org/wikipedia/commons/9/9d/Anitta_2022.jpg",
 musicas:[
-{titulo:"Envolver",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"},
-{titulo:"Show das Poderosas",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"}
+{titulo:"Envolver",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"}
 ]
 }
 ];
@@ -158,32 +119,34 @@ let musicaAtual = 0;
 
 const audio = document.getElementById("audio");
 
-function carregarArtistas(){
+function mostrar(lista){
 let html="";
-artistas.forEach((a,i)=>{
+lista.forEach((a,i)=>{
 html+=`
-<div class="card" onclick="abrirArtista(${i})">
+<div class="card" onclick="abrir(${i})">
 <img src="${a.img}">
 <p>${a.nome}</p>
 </div>`;
 });
-document.getElementById("artistas").innerHTML=html;
+document.getElementById("lista").innerHTML=html;
 }
 
-function abrirArtista(i){
+function filtrar(){
+let valor=document.getElementById("busca").value.toLowerCase();
+let filtrado=artistas.filter(a=>a.nome.toLowerCase().includes(valor));
+mostrar(filtrado);
+}
+
+function abrir(i){
 artistaAtual=i;
-let lista="";
-artistas[i].musicas.forEach((m,index)=>{
-lista+=`<div class="musica" onclick="tocar(${index})">${m.titulo}</div>`;
-});
-document.getElementById("musicas").innerHTML=lista;
+musicaAtual=0;
+tocar();
 }
 
-function tocar(i){
-musicaAtual=i;
-let m=artistas[artistaAtual].musicas[i];
+function tocar(){
+let m=artistas[artistaAtual].musicas[musicaAtual];
 audio.src=m.src;
-document.getElementById("tocando").innerText=m.titulo;
+document.getElementById("nomeMusica").innerText=m.titulo;
 audio.play();
 }
 
@@ -193,17 +156,13 @@ function pause(){audio.pause();}
 function proxima(){
 musicaAtual++;
 if(musicaAtual>=artistas[artistaAtual].musicas.length) musicaAtual=0;
-tocar(musicaAtual);
+tocar();
 }
 
 function anterior(){
 musicaAtual--;
 if(musicaAtual<0) musicaAtual=artistas[artistaAtual].musicas.length-1;
-tocar(musicaAtual);
-}
-
-function voltar(){
-document.getElementById("musicas").innerHTML="";
+tocar();
 }
 
 audio.addEventListener("timeupdate", ()=>{
@@ -223,7 +182,7 @@ document.getElementById("barra").addEventListener("input",(e)=>{
 audio.currentTime=(e.target.value/100)*audio.duration;
 });
 
-carregarArtistas();
+mostrar(artistas);
 
 </script>
 </body>
