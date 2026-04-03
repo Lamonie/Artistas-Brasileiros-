@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tigrinho 🎧</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,42 +13,58 @@
 </header>
 
 <main>
-  <h2>Recomendado para você</h2>
+
+  <h2>Feito para você</h2>
 
   <div class="cards">
 
-    <div class="card" onclick="playMusic('Ponta de Faca - Alcymar Monteiro')">
+    <div class="card" onclick="playMusic('Ponta de Faca', 'Alcymar Monteiro', 'music1')">
       <img src="https://i.imgur.com/8Km9tLL.jpg">
       <p>Ponta de Faca</p>
       <span>Alcymar Monteiro</span>
     </div>
 
-    <div class="card" onclick="playMusic('Borbulhas de Amor - Fagner')">
+    <div class="card" onclick="playMusic('Borbulhas de Amor', 'Fagner', 'music2')">
       <img src="https://i.imgur.com/4YQZ4Yh.jpg">
       <p>Borbulhas de Amor</p>
       <span>Fagner</span>
     </div>
 
-    <div class="card" onclick="playMusic('Sonho Meu')">
+    <div class="card" onclick="playMusic('Sonho Meu', 'Samba', 'music3')">
       <img src="https://i.imgur.com/U3vTGjX.jpg">
       <p>Sonho Meu</p>
       <span>Samba</span>
     </div>
 
   </div>
+
 </main>
 
 <!-- PLAYER -->
 <div class="player">
   <div class="info">
-    <p id="musicName">Nenhuma música</p>
+    <p id="title">Nenhuma música</p>
+    <span id="artist"></span>
   </div>
 
   <div class="controls">
-    <button onclick="play()">▶</button>
-    <button onclick="pause()">⏸</button>
+    <button onclick="prev()">⏮</button>
+    <button onclick="togglePlay()" id="playBtn">▶</button>
+    <button onclick="next()">⏭</button>
   </div>
 </div>
+
+<!-- MENU -->
+<nav class="menu">
+  <button>🏠<br>Início</button>
+  <button>🔍<br>Buscar</button>
+  <button>📚<br>Biblioteca</button>
+</nav>
+
+<!-- AUDIOS -->
+<audio id="music1" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+<audio id="music2" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+<audio id="music3" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"></audio>
 
 <script src="script.js"></script>
 </body>
@@ -59,27 +76,30 @@ body {
   color: white;
 }
 
+/* HEADER */
 header {
   padding: 20px;
   font-size: 22px;
-  font-weight: bold;
 }
 
+/* TEXT */
 h2 {
   margin-left: 20px;
 }
 
+/* CARDS */
 .cards {
   display: flex;
   gap: 15px;
   padding: 20px;
+  overflow-x: auto;
 }
 
 .card {
+  min-width: 150px;
   background: #181818;
-  padding: 10px;
   border-radius: 10px;
-  width: 150px;
+  padding: 10px;
   cursor: pointer;
   transition: 0.3s;
 }
@@ -96,7 +116,6 @@ h2 {
 
 .card p {
   margin: 10px 0 5px;
-  font-weight: bold;
 }
 
 .card span {
@@ -107,11 +126,12 @@ h2 {
 /* PLAYER */
 .player {
   position: fixed;
-  bottom: 0;
+  bottom: 60px;
   width: 100%;
   background: #181818;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 15px;
   border-top: 1px solid #333;
 }
@@ -123,27 +143,62 @@ h2 {
   padding: 10px;
   margin: 0 5px;
   border-radius: 50%;
-  cursor: pointer;
+  font-size: 16px;
 }
 
-.controls button:hover {
-  background: #1ed760;
+/* MENU */
+.menu {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #000;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
 }
-let currentMusic = "";
 
-function playMusic(name) {
-  currentMusic = name;
-  document.getElementById("musicName").innerText = name;
+.menu button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 12px;
 }
+let currentAudio = null;
+let isPlaying = false;
 
-function play() {
-  if (currentMusic === "") {
-    alert("Escolha uma música!");
-  } else {
-    alert("▶ Tocando: " + currentMusic);
+function playMusic(title, artist, id) {
+  if (currentAudio) {
+    currentAudio.pause();
   }
+
+  currentAudio = document.getElementById(id);
+  currentAudio.play();
+
+  document.getElementById("title").innerText = title;
+  document.getElementById("artist").innerText = artist;
+
+  isPlaying = true;
+  document.getElementById("playBtn").innerText = "⏸";
 }
 
-function pause() {
-  alert("⏸ Música pausada");
+function togglePlay() {
+  if (!currentAudio) return;
+
+  if (isPlaying) {
+    currentAudio.pause();
+    document.getElementById("playBtn").innerText = "▶";
+  } else {
+    currentAudio.play();
+    document.getElementById("playBtn").innerText = "⏸";
+  }
+
+  isPlaying = !isPlaying;
+}
+
+function next() {
+  alert("Próxima música (implementar playlist)");
+}
+
+function prev() {
+  alert("Música anterior (implementar playlist)");
 }
