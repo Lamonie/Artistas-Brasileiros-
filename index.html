@@ -5,41 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brasil Music PRO</title>
 <style>
+
 body {
   margin:0;
   font-family: Arial;
   background:#121212;
   color:white;
+  display:flex;
 }
 
-header {
+/* MENU LATERAL */
+.sidebar {
+  width:220px;
+  background:#000;
+  height:100vh;
   padding:20px;
-  font-size:24px;
-  font-weight:bold;
-  background: linear-gradient(90deg,#1DB954,#0d3d1f);
+  position:fixed;
 }
 
-.container {
+.sidebar h2 {
+  color:#1DB954;
+}
+
+.sidebar button {
+  width:100%;
+  margin:10px 0;
+  padding:10px;
+  border:none;
+  background:#1DB954;
+  color:white;
+  border-radius:20px;
+}
+
+/* CONTEÚDO */
+.main {
+  margin-left:220px;
+  padding:20px;
+  width:100%;
+}
+
+.grid {
   display:flex;
   flex-wrap:wrap;
-  justify-content:center;
-  padding:15px;
 }
 
 .card {
-  width:160px;
+  width:180px;
   margin:10px;
   background:#181818;
   border-radius:10px;
   padding:10px;
-  text-align:center;
   cursor:pointer;
   transition:0.3s;
 }
 
 .card:hover {
-  background:#282828;
   transform:scale(1.05);
+  background:#282828;
 }
 
 .card img {
@@ -47,6 +69,7 @@ header {
   border-radius:8px;
 }
 
+/* PLAYER */
 .player {
   position:fixed;
   bottom:0;
@@ -62,20 +85,40 @@ header {
   border-radius:50%;
   background:#1DB954;
   color:white;
-  font-size:16px;
 }
 
 .progress {
   width:100%;
 }
 
+.lista-musicas {
+  margin-top:20px;
+}
+
+.musica {
+  padding:10px;
+  border-bottom:1px solid #333;
+  cursor:pointer;
+}
+
+.musica:hover {
+  background:#222;
+}
+
 </style>
 </head>
 <body>
-<header>🎧 Brasil Music PRO</header>
-<div class="container" id="lista"></div>
+<div class="sidebar">
+<h2>🎧 Brasil Music</h2>
+<button onclick="voltar()">🏠 Início</button>
+</div>
+<div class="main">
+<h1>Artistas</h1>
+<div class="grid" id="artistas"></div>
+<div class="lista-musicas" id="musicas"></div>
+</div>
 <div class="player">
-<div id="nomeMusica">Nenhuma música</div>
+<div id="tocando">Nada tocando</div>
 <input type="range" id="barra" class="progress" value="0">
 <div>
 <span id="tempoAtual">0:00</span> /
@@ -86,6 +129,7 @@ header {
 <button onclick="pause()">⏸</button>
 <button onclick="anterior()">⏮</button>
 <button onclick="proxima()">⏭</button>
+</div>
 </div>
 </div>
 <script>
@@ -109,49 +153,57 @@ musicas:[
 }
 ];
 
-let atualArtista = 0;
-let atualMusica = 0;
+let artistaAtual = 0;
+let musicaAtual = 0;
 
 const audio = document.getElementById("audio");
 
-function carregarLista(){
+function carregarArtistas(){
 let html="";
 artistas.forEach((a,i)=>{
 html+=`
-<div class="card" onclick="abrir(${i})">
+<div class="card" onclick="abrirArtista(${i})">
 <img src="${a.img}">
 <p>${a.nome}</p>
 </div>`;
 });
-document.getElementById("lista").innerHTML=html;
+document.getElementById("artistas").innerHTML=html;
 }
 
-function abrir(i){
-atualArtista=i;
-atualMusica=0;
-carregarMusica();
+function abrirArtista(i){
+artistaAtual=i;
+let lista="";
+artistas[i].musicas.forEach((m,index)=>{
+lista+=`<div class="musica" onclick="tocar(${index})">${m.titulo}</div>`;
+});
+document.getElementById("musicas").innerHTML=lista;
 }
 
-function carregarMusica(){
-let m = artistas[atualArtista].musicas[atualMusica];
+function tocar(i){
+musicaAtual=i;
+let m=artistas[artistaAtual].musicas[i];
 audio.src=m.src;
-document.getElementById("nomeMusica").innerText=m.titulo;
+document.getElementById("tocando").innerText=m.titulo;
 audio.play();
 }
 
-function play(){ audio.play(); }
-function pause(){ audio.pause(); }
+function play(){audio.play();}
+function pause(){audio.pause();}
 
 function proxima(){
-atualMusica++;
-if(atualMusica>=artistas[atualArtista].musicas.length) atualMusica=0;
-carregarMusica();
+musicaAtual++;
+if(musicaAtual>=artistas[artistaAtual].musicas.length) musicaAtual=0;
+tocar(musicaAtual);
 }
 
 function anterior(){
-atualMusica--;
-if(atualMusica<0) atualMusica=artistas[atualArtista].musicas.length-1;
-carregarMusica();
+musicaAtual--;
+if(musicaAtual<0) musicaAtual=artistas[artistaAtual].musicas.length-1;
+tocar(musicaAtual);
+}
+
+function voltar(){
+document.getElementById("musicas").innerHTML="";
 }
 
 audio.addEventListener("timeupdate", ()=>{
@@ -171,7 +223,7 @@ document.getElementById("barra").addEventListener("input",(e)=>{
 audio.currentTime=(e.target.value/100)*audio.duration;
 });
 
-carregarLista();
+carregarArtistas();
 
 </script>
 </body>
