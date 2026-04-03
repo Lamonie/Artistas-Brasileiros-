@@ -8,33 +8,43 @@
 body {
   margin:0;
   font-family: Arial;
-  background: linear-gradient(180deg, #1DB954, #121212);
+  background:#121212;
   color:white;
 }
 
 header {
   padding:20px;
-  text-align:center;
   font-size:24px;
   font-weight:bold;
+  background: linear-gradient(90deg,#1DB954,#0d3d1f);
 }
 
 .container {
-  padding:20px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  padding:15px;
 }
 
 .card {
+  width:160px;
+  margin:10px;
   background:#181818;
-  padding:15px;
-  margin:10px 0;
-  border-radius:12px;
+  border-radius:10px;
+  padding:10px;
+  text-align:center;
   cursor:pointer;
   transition:0.3s;
 }
 
 .card:hover {
   background:#282828;
-  transform:scale(1.03);
+  transform:scale(1.05);
+}
+
+.card img {
+  width:100%;
+  border-radius:8px;
 }
 
 .player {
@@ -47,12 +57,12 @@ header {
 
 .controls button {
   margin:5px;
-  padding:10px 15px;
+  padding:10px;
   border:none;
-  border-radius:20px;
+  border-radius:50%;
   background:#1DB954;
   color:white;
-  cursor:pointer;
+  font-size:16px;
 }
 
 .progress {
@@ -82,16 +92,19 @@ header {
 
 const artistas = [
 {
-nome:"Artista Exemplo",
+nome:"Gusttavo Lima",
+img:"https://upload.wikimedia.org/wikipedia/commons/0/0b/Gusttavo_Lima.jpg",
 musicas:[
-{
-titulo:"Música 1",
-src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+{titulo:"Balada Boa",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
+{titulo:"Apelido Carinhoso",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"}
+]
 },
 {
-titulo:"Música 2",
-src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-}
+nome:"Anitta",
+img:"https://upload.wikimedia.org/wikipedia/commons/9/9d/Anitta_2022.jpg",
+musicas:[
+{titulo:"Envolver",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"},
+{titulo:"Show das Poderosas",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"}
 ]
 }
 ];
@@ -104,7 +117,11 @@ const audio = document.getElementById("audio");
 function carregarLista(){
 let html="";
 artistas.forEach((a,i)=>{
-html+=`<div class="card" onclick="abrir(${i})">${a.nome}</div>`;
+html+=`
+<div class="card" onclick="abrir(${i})">
+<img src="${a.img}">
+<p>${a.nome}</p>
+</div>`;
 });
 document.getElementById("lista").innerHTML=html;
 }
