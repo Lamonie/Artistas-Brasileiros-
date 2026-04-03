@@ -1,1 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Explorer</title>
 
+<style>
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* FUNDO ANIMADO */
+body {
+    height: 100vh;
+    background: linear-gradient(270deg, #0f0c29, #302b63, #24243e);
+    background-size: 600% 600%;
+    animation: gradientBG 12s ease infinite;
+    color: white;
+}
+
+@keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* NAV */
+nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
+}
+
+nav button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+nav button:hover {
+    color: #1db954;
+}
+
+/* CONTAINER */
+.container {
+    padding: 20px;
+}
+
+/* BUSCA */
+.search-box {
+    margin-bottom: 20px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    padding: 10px;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* IMAGEM */
+.card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* BOTÕES */
+.button {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(45deg, #1db954, #1ed760);
+    color: black;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.button:hover {
+    transform: scale(1.1);
+}
+
+/* TEMPO */
+.time {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* ABAS */
+.tab {
+    display: none;
+}
+
+.active {
+    display: block;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <button onclick="openTab('home')">Home</button>
+    <button onclick="openTab('search')">Buscar</button>
+    <button onclick="openTab('library')">Biblioteca</button>
+</nav>
+
+<div class="container">
+
+    <!-- HOME -->
+    <div id="home" class="tab active">
+        <h1>🎧 Music Explorer</h1>
+        <p>Explore artistas, álbuns e músicas.</p>
+    </div>
+
+    <!-- BUSCA -->
+    <div id="search" class="tab">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Buscar artista..." onkeyup="searchArtist()">
+        </div>
+        <div class="grid" id="results"></div>
+    </div>
+
+    <!-- BIBLIOTECA -->
+    <div id="library" class="tab">
+        <h2>📚 Sua Biblioteca</h2>
+        <div id="libraryList"></div>
+    </div>
+
+</div>
+
+<script>
+
+/* DADOS MOCK (você pode trocar depois por API real tipo Spotify) */
+const artists = [
+{
+    name: "The Weeknd",
+    albums: [
+        {
+            title: "After Hours",
+            cover: "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Weeknd_-_After_Hours.png",
+            songs: [
+                {name: "Blinding Lights", time: "03:20"},
+                {name: "Save Your Tears", time: "03:35"}
+            ]
+        }
+    ]
+},
+{
+    name: "Drake",
+    albums: [
+        {
+            title: "Scorpion",
+            cover: "https://upload.wikimedia.org/wikipedia/en/9/90/Scorpion_by_Drake.jpg",
+            songs: [
+                {name: "God's Plan", time: "03:19"},
+                {name: "In My Feelings", time: "03:37"}
+            ]
+        }
+    ]
+}
+];
+
+/* TROCAR ABAS */
+function openTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+}
+
+/* BUSCA */
+function searchArtist() {
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    const results = document.getElementById("results");
+    results.innerHTML = "";
+
+    artists.forEach(artist => {
+        if (artist.name.toLowerCase().includes(query)) {
+
+            artist.albums.forEach(album => {
+
+                const card = document.createElement("div");
+                card.className = "card";
+
+                card.innerHTML = `
+                    <img src="${album.cover}">
+                    <h3>${album.title}</h3>
+                    <p>${artist.name}</p>
+                `;
+
+                album.songs.forEach(song => {
+                    const div = document.createElement("div");
+
+                    const time = generateMilliseconds(song.time);
+
+                    div.innerHTML = `
+                        <p>${song.name}</p>
+                        <div class="time">${time}</div>
+                        <button class="button" onclick="copyText('${song.name}')">Copiar</button>
+                    `;
+
+                    card.appendChild(div);
+                });
+
+                results.appendChild(card);
+            });
+        }
+    });
+}
+
+/* GERAR TEMPO COM MILÉSIMO */
+function generateMilliseconds(baseTime) {
+    const ms = Math.floor(Math.random() * 999);
+    return baseTime + ":" + ms.toString().padStart(3, '0');
+}
+
+/* COPIAR */
+function copyText(text) {
+    navigator.clipboard.writeText(text);
+    alert("Copiado: " + text);
+}
+
+</script>
+
+</body>
+</html>
