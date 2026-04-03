@@ -4,155 +4,159 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Brasil Music PRO</title>
-
 <style>
 body {
-  margin: 0;
+  margin:0;
   font-family: Arial;
-  background: #121212;
-  color: white;
+  background: linear-gradient(180deg, #1DB954, #121212);
+  color:white;
 }
 
 header {
-  background: #1DB954;
-  padding: 15px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.search {
-  text-align: center;
-  margin: 20px;
-}
-
-input {
-  padding: 12px;
-  width: 250px;
-  border-radius: 25px;
-  border: none;
-}
-
-button {
-  padding: 12px;
-  border-radius: 25px;
-  border: none;
-  background: #1DB954;
-  color: white;
-  cursor: pointer;
+  padding:20px;
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
 }
 
 .container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  padding:20px;
 }
 
 .card {
-  background: #181818;
-  width: 220px;
-  margin: 10px;
-  border-radius: 12px;
-  padding: 10px;
-  transition: 0.3s;
+  background:#181818;
+  padding:15px;
+  margin:10px 0;
+  border-radius:12px;
+  cursor:pointer;
+  transition:0.3s;
 }
 
 .card:hover {
-  transform: scale(1.05);
-}
-
-.card img {
-  width: 100%;
-  border-radius: 10px;
+  background:#282828;
+  transform:scale(1.03);
 }
 
 .player {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #000;
-  padding: 10px;
-  text-align: center;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#000;
+  padding:10px;
 }
 
-audio {
-  width: 90%;
+.controls button {
+  margin:5px;
+  padding:10px 15px;
+  border:none;
+  border-radius:20px;
+  background:#1DB954;
+  color:white;
+  cursor:pointer;
 }
+
+.progress {
+  width:100%;
+}
+
 </style>
-
 </head>
-
 <body>
-
 <header>🎧 Brasil Music PRO</header>
-
-<div class="search">
-<input type="text" id="busca" placeholder="Buscar artista...">
-<button onclick="buscar()">Buscar</button>
-</div>
-
-<div class="container" id="resultado"></div>
-
+<div class="container" id="lista"></div>
 <div class="player">
-<audio id="audio" controls></audio>
+<div id="nomeMusica">Nenhuma música</div>
+<input type="range" id="barra" class="progress" value="0">
+<div>
+<span id="tempoAtual">0:00</span> /
+<span id="tempoTotal">0:00</span>
 </div>
-
+<div class="controls">
+<button onclick="play()">▶</button>
+<button onclick="pause()">⏸</button>
+<button onclick="anterior()">⏮</button>
+<button onclick="proxima()">⏭</button>
+</div>
+</div>
 <script>
 
-async function buscar() {
-  let valor = document.getElementById("busca").value;
-  let url = `https://api.deezer.com/search/artist?q=${valor}&output=jsonp`;
+const artistas = [
+{
+nome:"Artista Exemplo",
+musicas:[
+{
+titulo:"Música 1",
+src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+},
+{
+titulo:"Música 2",
+src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+}
+]
+}
+];
 
-  let script = document.createElement("script");
-  script.src = url + "&callback=mostrar";
-  document.body.appendChild(script);
+let atualArtista = 0;
+let atualMusica = 0;
+
+const audio = document.getElementById("audio");
+
+function carregarLista(){
+let html="";
+artistas.forEach((a,i)=>{
+html+=`<div class="card" onclick="abrir(${i})">${a.nome}</div>`;
+});
+document.getElementById("lista").innerHTML=html;
 }
 
-function mostrar(data) {
-  let html = "";
-
-  data.data.forEach(a => {
-    html += `
-    <div class="card" onclick="verArtista(${a.id})">
-      <img src="${a.picture_medium}">
-      <h3>${a.name}</h3>
-      <p>Fans: ${a.nb_fan}</p>
-    </div>
-    `;
-  });
-
-  document.getElementById("resultado").innerHTML = html;
+function abrir(i){
+atualArtista=i;
+atualMusica=0;
+carregarMusica();
 }
 
-function verArtista(id) {
-  let script = document.createElement("script");
-  script.src = `https://api.deezer.com/artist/${id}/top?limit=10&output=jsonp&callback=topMusicas`;
-  document.body.appendChild(script);
+function carregarMusica(){
+let m = artistas[atualArtista].musicas[atualMusica];
+audio.src=m.src;
+document.getElementById("nomeMusica").innerText=m.titulo;
+audio.play();
 }
 
-function topMusicas(data) {
-  let html = "<h2 style='text-align:center'>🔥 Top músicas</h2>";
+function play(){ audio.play(); }
+function pause(){ audio.pause(); }
 
-  data.data.forEach(m => {
-    html += `
-    <div class="card">
-      <img src="${m.album.cover_medium}">
-      <h3>${m.title}</h3>
-      <button onclick="tocar('${m.preview}')">▶ Tocar</button>
-    </div>
-    `;
-  });
-
-  document.getElementById("resultado").innerHTML = html;
+function proxima(){
+atualMusica++;
+if(atualMusica>=artistas[atualArtista].musicas.length) atualMusica=0;
+carregarMusica();
 }
 
-function tocar(src) {
-  let audio = document.getElementById("audio");
-  audio.src = src;
-  audio.play();
+function anterior(){
+atualMusica--;
+if(atualMusica<0) atualMusica=artistas[atualArtista].musicas.length-1;
+carregarMusica();
 }
+
+audio.addEventListener("timeupdate", ()=>{
+let barra=document.getElementById("barra");
+barra.value=(audio.currentTime/audio.duration)*100;
+
+let min=Math.floor(audio.currentTime/60);
+let seg=Math.floor(audio.currentTime%60);
+document.getElementById("tempoAtual").innerText=min+":"+("0"+seg).slice(-2);
+
+let minT=Math.floor(audio.duration/60)||0;
+let segT=Math.floor(audio.duration%60)||0;
+document.getElementById("tempoTotal").innerText=minT+":"+("0"+segT).slice(-2);
+});
+
+document.getElementById("barra").addEventListener("input",(e)=>{
+audio.currentTime=(e.target.value/100)*audio.duration;
+});
+
+carregarLista();
 
 </script>
-
 </body>
 </html>
+:::
