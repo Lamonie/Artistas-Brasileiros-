@@ -1,8 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music World Pro</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(270deg, #6a00ff, #ff00cc, #00ffc8);
+    background-size: 600% 600%;
+    animation: bg 12s infinite;
+    color: white;
+}
+
+@keyframes bg {
+    0% {background-position: 0%}
+    50% {background-position: 100%}
+    100% {background-position: 0%}
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.search {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+input {
+    padding: 12px;
+    width: 60%;
+    border-radius: 20px;
+    border: none;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 20px;
+    background: #00ffc8;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-bottom: 120px;
+}
+
+.card {
+    width: 180px;
+    margin: 10px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 15px;
+    padding: 10px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.player {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #111;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.player img {
+    width: 50px;
+    border-radius: 5px;
+}
+
+.controls button {
+    margin: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>🎵 Music World Pro</header>
+
+<div class="search">
+    <input type="text" id="search" placeholder="Buscar artista ou música...">
+    <button onclick="buscar()">Buscar</button>
+</div>
+
+<div class="container" id="result"></div>
+
+<!-- PLAYER FIXO -->
+<div class="player" id="player" style="display:none;">
+    <img id="cover">
+    <div>
+        <div id="title"></div>
+        <div id="artist"></div>
+    </div>
+    <div class="controls">
+        <button onclick="togglePlay()">⏯</button>
+        <button onclick="stop()">⏹</button>
+    </div>
+</div>
+
+<audio id="audio"></audio>
+
 <script>
+let currentAudio = document.getElementById("audio");
+
 async function buscar() {
     let query = document.getElementById("search").value;
 
-    let url = `https://api.deezer.com/search?q=${query}`;
+    let url = `https://corsproxy.io/?https://api.deezer.com/search?q=${query}`;
 
     let res = await fetch(url);
     let data = await res.json();
@@ -16,33 +146,38 @@ async function buscar() {
 
         card.innerHTML = `
             <img src="${musica.album.cover_medium}">
-            <h3>${musica.artist.name}</h3>
+            <h4>${musica.artist.name}</h4>
             <p>${musica.title}</p>
-
-            <audio id="audio${musica.id}" src="${musica.preview}"></audio>
-
-            <div class="controls">
-                <button onclick="play(${musica.id})">▶️</button>
-                <button onclick="pause(${musica.id})">⏸</button>
-                <button onclick="stop(${musica.id})">⏹</button>
-            </div>
+            <button onclick='playMusic("${musica.preview}", "${musica.album.cover_medium}", "${musica.title}", "${musica.artist.name}")'>▶️ Tocar</button>
         `;
 
         container.appendChild(card);
     });
 }
 
-function play(id) {
-    document.getElementById("audio"+id).play();
+function playMusic(src, cover, title, artist) {
+    currentAudio.src = src;
+    currentAudio.play();
+
+    document.getElementById("player").style.display = "flex";
+    document.getElementById("cover").src = cover;
+    document.getElementById("title").innerText = title;
+    document.getElementById("artist").innerText = artist;
 }
 
-function pause(id) {
-    document.getElementById("audio"+id).pause();
+function togglePlay() {
+    if (currentAudio.paused) {
+        currentAudio.play();
+    } else {
+        currentAudio.pause();
+    }
 }
 
-function stop(id) {
-    let audio = document.getElementById("audio"+id);
-    audio.pause();
-    audio.currentTime = 0;
+function stop() {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
 }
 </script>
+
+</body>
+</html>
