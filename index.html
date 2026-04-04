@@ -1,112 +1,10 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Music World</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(270deg, #ff00cc, #3333ff, #00ffcc);
-    background-size: 600% 600%;
-    animation: fundoAnimado 10s infinite;
-    color: white;
-}
-
-@keyframes fundoAnimado {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
-}
-
-header {
-    text-align: center;
-    padding: 20px;
-    font-size: 30px;
-    font-weight: bold;
-}
-
-.search {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-input {
-    padding: 10px;
-    width: 60%;
-    border-radius: 10px;
-    border: none;
-    font-size: 18px;
-}
-
-button {
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    background: #00ffcc;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.card {
-    width: 200px;
-    margin: 10px;
-    padding: 10px;
-    background: rgba(0,0,0,0.6);
-    border-radius: 15px;
-    text-align: center;
-    transition: 0.3s;
-}
-
-.card:hover {
-    transform: scale(1.1);
-}
-
-img {
-    width: 100%;
-    border-radius: 10px;
-}
-
-.controls button {
-    margin: 5px;
-}
-</style>
-</head>
-
-<body>
-
-<header>🎵 Music World Player</header>
-
-<div class="search">
-    <input type="text" id="search" placeholder="Buscar artista...">
-    <button onclick="buscar()">Buscar</button>
-</div>
-
-<div class="container" id="result"></div>
-
 <script>
 async function buscar() {
     let query = document.getElementById("search").value;
 
-    let url = `https://deezerdevs-deezer.p.rapidapi.com/search?q=${query}`;
+    let url = `https://api.deezer.com/search?q=${query}`;
 
-    let options = {
-        method: 'GET',
-        headers: {
-            'X-RapidAPI-Key': 'SUA_API_KEY_AQUI',
-            'X-RapidAPI-Host': 'deezerdevs-deezer.p.rapidapi.com'
-        }
-    };
-
-    let res = await fetch(url, options);
+    let res = await fetch(url);
     let data = await res.json();
 
     let container = document.getElementById("result");
@@ -148,6 +46,3 @@ function stop(id) {
     audio.currentTime = 0;
 }
 </script>
-
-</body>
-</html>
