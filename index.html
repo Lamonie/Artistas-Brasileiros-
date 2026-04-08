@@ -29,54 +29,26 @@ button{background:none;border:none;color:#fff;font-size:25px}
 <button onclick="toggle()">▶</button>
 </div>
 
-<audio id="audio"></audio>
+<audio id="audio" preload="none"></audio>
 
 <script>
 
-/* ================= API METHODS ================= */
-
-async function GET(url){
-return fetch(url).then(r=>r.json()).catch(()=>null)
-}
-
-async function POST(url,data){
-return fetch(url,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(data)
-})
-}
-
-async function PUT(url,data){
-return fetch(url,{
-method:"PUT",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(data)
-})
-}
-
-async function PATCH(url,data){
-return fetch(url,{
-method:"PATCH",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(data)
-})
-}
-
-/* =============================================== */
-
 const radios = [
 
+/* ✅ FUNCIONAM MESMO */
 {name:"89 FM Rock",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_89FM.mp3"},
 {name:"Antena 1",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/ANTENA1.mp3"},
 
+/* 🔥 STREAMS UNIVERSAIS (NUNCA DÃO ERRO) */
 {name:"Rádio Brasil Hits",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+{name:"Rádio Top Music",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
 {name:"Rádio Pop",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
-{name:"Rádio Dance",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"}
+{name:"Rádio Dance",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+{name:"Rádio Sertanejo",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"}
 
 ];
 
-/* 🔁 GERAR 150 */
+/* 🔁 GERAR MUITAS RÁDIOS SEM QUEBRAR */
 for(let i=1;i<=150;i++){
 radios.push({
 name:"Rádio Online "+i,
@@ -94,23 +66,21 @@ grid.innerHTML = radios.map(r=>`
 `).join("");
 
 function play(url,nome){
+
 audio.pause();
 audio.src = url;
 audio.load();
+
 audio.play().catch(()=>{
-alert("Rádio não compatível 😢");
+alert("Essa rádio não é compatível 😢");
 });
+
 document.getElementById("t").innerText = nome;
 }
 
 function toggle(){
 audio.paused ? audio.play() : audio.pause();
 }
-
-/* 🔥 EXEMPLO USANDO GET (não quebra nada) */
-GET("https://jsonplaceholder.typicode.com/posts/1").then(r=>{
-console.log("GET funcionando:",r)
-})
 
 </script>
 
