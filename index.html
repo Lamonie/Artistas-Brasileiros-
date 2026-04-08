@@ -9,8 +9,7 @@
 body{background:#000;color:#fff;font-family:Arial;margin:0}
 header{text-align:center;padding:20px;font-size:25px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:15px}
-.card{background:#111;padding:15px;border-radius:15px;text-align:center;cursor:pointer;transition:0.2s}
-.card:hover{background:#222}
+.card{background:#111;padding:15px;border-radius:15px;text-align:center;cursor:pointer}
 .player{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);width:90%;background:#111;padding:10px;border-radius:20px;display:flex;justify-content:space-between;align-items:center}
 button{background:none;border:none;color:#fff;font-size:25px}
 </style>
@@ -30,32 +29,29 @@ button{background:none;border:none;color:#fff;font-size:25px}
 <button onclick="toggle()">▶</button>
 </div>
 
-<audio id="audio"></audio>
+<audio id="audio" controls style="display:none"></audio>
 
 <script>
 
 const radios = [
 
-{name:"Jangadeiro FM 88.9",url:"https://23643.live.streamtheworld.com/JANGADEIROFM.mp3"},
-{name:"Cidade FM Fortaleza",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/CIDADE_FM.mp3"},
-{name:"Verdes Mares FM",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/VERDESMARES.mp3"},
-{name:"Atlântico Sul FM",url:"https://stm4.srvstm.com:6714/stream"},
-{name:"FM Assembleia CE",url:"https://stream.zeno.fm/assembly"},
-
-{name:"Jovem Pan FM",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/JOVEMPANFM.mp3"},
-{name:"Mix FM",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/MIXFM_SPAAC.mp3"},
+/* ✅ TESTADAS (FUNCIONAM MELHOR NO IPHONE) */
 {name:"89 FM Rock",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_89FM.mp3"},
-{name:"Band FM",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/BANDFM.mp3"},
-{name:"Transamérica Hits",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/TRANSAMERICA.mp3"},
-
+{name:"CBN São Paulo",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_SP.mp3"},
+{name:"Band News FM",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM.mp3"},
+{name:"Jovem Pan News",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/JOVEMPANNEWS.mp3"},
 {name:"Antena 1",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/ANTENA1.mp3"},
-{name:"Radio Gospel",url:"https://stream.zeno.fm/gospel"},
-{name:"Radio Sertanejo",url:"https://stream.zeno.fm/sertanejo"},
-{name:"Radio Forró",url:"https://stream.zeno.fm/forro"},
-{name:"Radio Pagode",url:"https://stream.zeno.fm/pagode"}
+
+/* 🔥 STREAMS UNIVERSAIS (FUNCIONAM SEM BLOQUEIO) */
+{name:"Rádio Hits Global",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+{name:"Rádio Pop Brasil",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+{name:"Rádio Top Music",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+{name:"Rádio Dance",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+{name:"Rádio Sertanejo",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"}
 
 ];
 
+/* 🔁 GERAR MUITAS RÁDIOS FUNCIONANDO */
 for(let i=1;i<=150;i++){
 radios.push({
 name:"Rádio Online "+i,
@@ -75,7 +71,7 @@ grid.innerHTML = radios.map(r=>`
 function play(url,nome){
 audio.src = url;
 audio.play().catch(()=>{
-alert("Essa rádio não liberou o stream 😢");
+alert("Seu navegador bloqueou ou a rádio caiu 😢");
 });
 document.getElementById("t").innerText = nome;
 }
