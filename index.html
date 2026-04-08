@@ -2,152 +2,177 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lamoniê Rádio v3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lamoniê Rádio PRO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #00ff88; --bg: #0a0a0a; --card: #161616; }
-        body { background: var(--bg); color: #fff; font-family: -apple-system, system-ui, sans-serif; margin: 0; padding-bottom: 120px; }
-        
-        header { text-align: center; padding: 25px; font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #fff; }
-        .cidade-label { padding: 15px 20px 5px; color: var(--neon); font-size: 12px; text-transform: uppercase; font-weight: bold; opacity: 0.8; }
+        :root { --main-green: #25d366; --bg-dark: #0f0f0f; --card-bg: #1a1a1a; }
+        body { background: var(--bg-dark); color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding-bottom: 120px; overflow-x: hidden; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
-        
+        header { background: #000; padding: 20px; text-align: center; border-bottom: 2px solid var(--main-green); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; color: var(--main-green); }
+
+        .container { padding: 15px; }
+        .section-title { font-size: 14px; color: #888; text-transform: uppercase; margin: 20px 0 10px 5px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
         .card { 
-            background: var(--card); padding: 20px 10px; border-radius: 20px; text-align: center; 
-            cursor: pointer; border: 1px solid #222; transition: 0.2s;
+            background: var(--card-bg); border-radius: 15px; padding: 20px 10px; text-align: center; 
+            border: 1px solid #252525; transition: all 0.2s ease; position: relative; overflow: hidden;
         }
-        .card:active { transform: scale(0.95); background: #222; }
-        .card.playing { border-color: var(--neon); box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+        .card:active { transform: scale(0.95); background: #252525; }
+        .card.active { border-color: var(--main-green); background: rgba(37, 211, 102, 0.05); }
 
-        /* Capas das rádios padronizadas */
-        .capa-padrao {
-            width: 60px; height: 60px; background: linear-gradient(135deg, #222, #000);
-            border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; 
-            justify-content: center; font-size: 25px; color: var(--neon);
-            border: 2px solid #333;
-        }
-
-        .card b { font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* Player Fixo */
-        .player-bar { 
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(20,20,20,0.95);
-            backdrop-filter: blur(15px); border-top: 1px solid #333; padding: 15px 20px;
-            display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;
-            z-index: 9999;
+        /* Capas Iguais - Estilo App */
+        .radio-icon {
+            width: 70px; height: 70px; background: linear-gradient(145deg, #222, #111);
+            border-radius: 20px; margin: 0 auto 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 30px; color: var(--main-green);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 1px solid #333;
         }
 
-        .info-musica b { color: var(--neon); font-size: 15px; display: block; }
-        .info-musica span { color: #888; font-size: 12px; }
+        .card b { font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+        .card span { font-size: 10px; color: #666; font-weight: bold; }
 
-        .controles button { background: none; border: none; color: #fff; font-size: 35px; }
+        /* Player Flutuante Estilo Radios.com.br */
+        .player-footer { 
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a;
+            border-top: 1px solid #333; padding: 15px 20px; display: flex; 
+            align-items: center; justify-content: space-between; box-sizing: border-box;
+            z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+        }
+
+        .playing-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
+        .mini-cover { width: 45px; height: 45px; background: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--main-green); border: 1px solid #333; }
+        
+        .text-info { overflow: hidden; }
+        .text-info b { font-size: 15px; color: var(--main-green); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .text-info small { color: #888; font-size: 11px; }
+
+        .controls button { background: none; border: none; color: #fff; font-size: 40px; cursor: pointer; outline: none; }
+
+        /* Loading */
+        .loader { width: 12px; height: 12px; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: none; animation: rotation 1s linear infinite; margin-left: 10px; }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<header>📻 LAMONIÊ RÁDIO</header>
+<header><div class="logo"><i class="fas fa-broadcast-tower"></i> LAMONIÊ FLOW</div></header>
 
-<div class="cidade-label">Pedra Branca & Boa Viagem</div>
-<div id="ceara-grid" class="grid"></div>
+<div class="container">
+    <div class="section-title"><i class="fas fa-map-marker-alt"></i> Interior do Ceará</div>
+    <div id="grid-ce" class="grid"></div>
 
-<div class="cidade-label">Grande São Paulo</div>
-<div id="sp-grid" class="grid"></div>
+    <div class="section-title"><i class="fas fa-city"></i> Grande São Paulo</div>
+    <div id="grid-sp" class="grid"></div>
+</div>
 
-<div class="player-bar">
-    <div class="info-musica">
-        <b id="radio-nome">Escolha uma rádio</b>
-        <span id="radio-cidade">Ceará / SP</span>
+<div class="player-footer">
+    <div class="playing-info">
+        <div class="mini-cover" id="m-icon"><i class="fas fa-radio"></i></div>
+        <div class="text-info">
+            <b id="p-name">Escolha uma rádio</b>
+            <small id="p-city">Sintonize agora</small>
+        </div>
+        <div class="loader" id="loading-spinner"></div>
     </div>
-    <div class="controles">
-        <button onclick="toggle()" id="btn-play"><i class="fas fa-play-circle"></i></button>
+    <div class="controls">
+        <button onclick="togglePlay()" id="master-play"><i class="fas fa-play-circle"></i></button>
     </div>
 </div>
 
-<audio id="audio-player"></audio>
+<audio id="main-audio" style="display:none"></audio>
 
 <script>
-const audio = document.getElementById("audio-player");
-const btnPlay = document.getElementById("btn-play");
+const audio = document.getElementById('main-audio');
+const playBtn = document.getElementById('master-play');
+const spinner = document.getElementById('loading-spinner');
 
-// Lista atualizada com links HTTPS (mais seguros para GitHub/iPhone)
-const listaRadios = [
-    // CEARÁ
-    { name: "Rádio Trapiá FM", city: "Pedra Branca - CE", url: "https://servidor31.brlogic.com:8328/live", cat: "CE" },
-    { name: "Sertão Central", city: "Pedra Branca - CE", url: "https://servidor22.brlogic.com:8012/live", cat: "CE" },
-    { name: "Asa Branca AM", city: "Boa Viagem - CE", url: "https://servidor24.brlogic.com:8108/live", cat: "CE" },
-    { name: "Liberdade FM", city: "Boa Viagem - CE", url: "https://servidor31.brlogic.com:8040/live", cat: "CE" },
-    { name: "Somzoom Sat", city: "Fortaleza - CE", url: "https://9650.brasilstream.com.br/stream", cat: "CE" },
+// LINKS VIA PROXY SSL (Esses links são mais fortes contra bloqueios do GitHub)
+const radios = [
+    { name: "Rádio Trapiá FM", city: "Pedra Branca - CE", url: "https://shout.brlogic.com/proxy/radiotrapia/stream", region: "CE" },
+    { name: "Sertão Central AM", city: "Pedra Branca - CE", url: "https://shout.brlogic.com/proxy/sertaocentral/stream", region: "CE" },
+    { name: "Asa Branca AM", city: "Boa Viagem - CE", url: "https://shout.brlogic.com/proxy/asabranca/stream", region: "CE" },
+    { name: "Liberdade FM", city: "Boa Viagem - CE", url: "https://shout.brlogic.com/proxy/liberdade/stream", region: "CE" },
     
-    // SÃO PAULO
-    { name: "Jovem Pan FM", city: "São Paulo - SP", url: "https://servidor31.brlogic.com:8300/live", cat: "SP" },
-    { name: "Metropolitana", city: "São Paulo - SP", url: "https://servidor22.brlogic.com:8032/live", cat: "SP" },
-    { name: "Mix FM SP", city: "São Paulo - SP", url: "https://mixfm.crossradio.com.br/stream", cat: "SP" },
-    { name: "Band FM SP", city: "São Paulo - SP", url: "https://9450.brasilstream.com.br/stream", cat: "SP" },
-    { name: "Alpha FM", city: "São Paulo - SP", url: "https://23113.live.streamtheworld.com/ALPHAFM_SC", cat: "SP" }
+    { name: "Jovem Pan FM", city: "São Paulo - SP", url: "https://shout.brlogic.com/proxy/jovempan/stream", region: "SP" },
+    { name: "Metropolitana", city: "São Paulo - SP", url: "https://shout.brlogic.com/proxy/metropolitana/stream", region: "SP" },
+    { name: "Mix FM SP", city: "São Paulo - SP", url: "https://mixfm.crossradio.com.br/stream", region: "SP" },
+    { name: "Alpha FM", city: "São Paulo - SP", url: "https://23113.live.streamtheworld.com/ALPHAFM_SC", region: "SP" }
 ];
 
-function montarGrid() {
-    const gridCE = document.getElementById("ceara-grid");
-    const gridSP = document.getElementById("sp-grid");
+function init() {
+    const gridCE = document.getElementById('grid-ce');
+    const gridSP = document.getElementById('grid-sp');
 
-    listaRadios.forEach((r, i) => {
-        const html = `
-            <div class="card" id="r-${i}" onclick="tocar(${i})">
-                <div class="capa-padrao"><i class="fas fa-rss"></i></div>
+    radios.forEach((r, i) => {
+        const card = `
+            <div class="card" id="radio-${i}" onclick="playRadio(${i})">
+                <div class="radio-icon"><i class="fas fa-podcast"></i></div>
                 <b>${r.name}</b>
+                <span>${r.city.split(' - ')[0]}</span>
             </div>
         `;
-        if(r.cat === "CE") gridCE.innerHTML += html;
-        else gridSP.innerHTML += html;
+        if(r.region === "CE") gridCE.innerHTML += card;
+        else gridSP.innerHTML += card;
     });
 }
 
-function tocar(id) {
-    const r = listaRadios[id];
+function playRadio(index) {
+    const r = radios[index];
     
-    // Visual
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('playing'));
-    document.getElementById(`r-${id}`).classList.add('playing');
-    
-    document.getElementById("radio-nome").innerText = r.name;
-    document.getElementById("radio-cidade").innerText = r.city;
+    // UI Update
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.getElementById(`radio-${index}`).classList.add('active');
+    document.getElementById('p-name').innerText = r.name;
+    document.getElementById('p-city').innerText = r.city;
+    spinner.style.display = 'block';
 
-    // Áudio
+    // Audio Logic
     audio.pause();
     audio.src = r.url;
     audio.load();
-    
-    // No iPhone, o play precisa de um empurrãozinho
-    let playPromise = audio.play();
-    
+
+    // Promessa de play para evitar erro de segurança
+    const playPromise = audio.play();
+
     if (playPromise !== undefined) {
         playPromise.then(_ => {
-            atualizarBotao(true);
+            spinner.style.display = 'none';
+            updateButton(true);
         }).catch(error => {
-            console.log("Erro de reprodução");
-            alert("Sinal instável. Tente novamente em instantes.");
-            atualizarBotao(false);
+            spinner.style.display = 'none';
+            console.log("Erro de Autoplay");
         });
     }
 }
 
-function toggle() {
+function togglePlay() {
+    if(!audio.src) return;
     if (audio.paused) {
         audio.play();
-        atualizarBotao(true);
+        updateButton(true);
     } else {
         audio.pause();
-        atualizarBotao(false);
+        updateButton(false);
     }
 }
 
-function atualizarBotao(tocando) {
-    btnPlay.innerHTML = tocando ? '<i class="fas fa-pause-circle"></i>' : '<i class="fas fa-play-circle"></i>';
+function updateButton(isPlaying) {
+    playBtn.innerHTML = isPlaying ? '<i class="fas fa-pause-circle"></i>' : '<i class="fas fa-play-circle"></i>';
 }
 
-montarGrid();
+// Eventos de Áudio
+audio.onplaying = () => { spinner.style.display = 'none'; updateButton(true); };
+audio.onwaiting = () => { spinner.style.display = 'block'; };
+audio.onerror = () => { 
+    spinner.style.display = 'none';
+    alert("Sinal da rádio interrompido no momento."); 
+};
+
+init();
 </script>
 
 </body>
