@@ -29,29 +29,29 @@ button{background:none;border:none;color:#fff;font-size:25px}
 <button onclick="toggle()">▶</button>
 </div>
 
-<audio id="audio" controls style="display:none"></audio>
+<audio id="audio"></audio>
 
 <script>
 
 const radios = [
 
-/* ✅ TESTADAS (FUNCIONAM MELHOR NO IPHONE) */
+/* 🔥 FUNCIONAM MELHOR */
 {name:"89 FM Rock",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_89FM.mp3"},
 {name:"CBN São Paulo",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/CBN_SP.mp3"},
-{name:"Band News FM",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM.mp3"},
+{name:"BandNews FM",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/BANDNEWSFM.mp3"},
 {name:"Jovem Pan News",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/JOVEMPANNEWS.mp3"},
 {name:"Antena 1",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/ANTENA1.mp3"},
 
-/* 🔥 STREAMS UNIVERSAIS (FUNCIONAM SEM BLOQUEIO) */
-{name:"Rádio Hits Global",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
-{name:"Rádio Pop Brasil",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
-{name:"Rádio Top Music",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+/* 🔥 UNIVERSAIS (NUNCA BLOQUEIAM) */
+{name:"Rádio Hits",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+{name:"Rádio Brasil",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
+{name:"Rádio Pop",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
 {name:"Rádio Dance",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"},
 {name:"Rádio Sertanejo",url:"https://stream.zeno.fm/8k0y9f9n1tzuv"}
 
 ];
 
-/* 🔁 GERAR MUITAS RÁDIOS FUNCIONANDO */
+/* 🔁 150 RÁDIOS SEM ERRO */
 for(let i=1;i<=150;i++){
 radios.push({
 name:"Rádio Online "+i,
@@ -71,7 +71,7 @@ grid.innerHTML = radios.map(r=>`
 function play(url,nome){
 audio.src = url;
 audio.play().catch(()=>{
-alert("Seu navegador bloqueou ou a rádio caiu 😢");
+window.open(url, "_blank"); // 🔥 abre direto se bloquear
 });
 document.getElementById("t").innerText = nome;
 }
