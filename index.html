@@ -1,178 +1,72 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lamoniê Rádio PRO</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --main-green: #25d366; --bg-dark: #0f0f0f; --card-bg: #1a1a1a; }
-        body { background: var(--bg-dark); color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding-bottom: 120px; overflow-x: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lamoniê Rádio PRO</title>
 
-        header { background: #000; padding: 20px; text-align: center; border-bottom: 2px solid var(--main-green); position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; color: var(--main-green); }
-
-        .container { padding: 15px; }
-        .section-title { font-size: 14px; color: #888; text-transform: uppercase; margin: 20px 0 10px 5px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
-
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-
-        .card { 
-            background: var(--card-bg); border-radius: 15px; padding: 20px 10px; text-align: center; 
-            border: 1px solid #252525; transition: all 0.2s ease; position: relative; overflow: hidden;
-        }
-        .card:active { transform: scale(0.95); background: #252525; }
-        .card.active { border-color: var(--main-green); background: rgba(37, 211, 102, 0.05); }
-
-        /* Capas Iguais - Estilo App */
-        .radio-icon {
-            width: 70px; height: 70px; background: linear-gradient(145deg, #222, #111);
-            border-radius: 20px; margin: 0 auto 12px; display: flex; align-items: center;
-            justify-content: center; font-size: 30px; color: var(--main-green);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); border: 1px solid #333;
-        }
-
-        .card b { font-size: 14px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
-        .card span { font-size: 10px; color: #666; font-weight: bold; }
-
-        /* Player Flutuante Estilo Radios.com.br */
-        .player-footer { 
-            position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a;
-            border-top: 1px solid #333; padding: 15px 20px; display: flex; 
-            align-items: center; justify-content: space-between; box-sizing: border-box;
-            z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-        }
-
-        .playing-info { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden; }
-        .mini-cover { width: 45px; height: 45px; background: #000; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--main-green); border: 1px solid #333; }
-        
-        .text-info { overflow: hidden; }
-        .text-info b { font-size: 15px; color: var(--main-green); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .text-info small { color: #888; font-size: 11px; }
-
-        .controls button { background: none; border: none; color: #fff; font-size: 40px; cursor: pointer; outline: none; }
-
-        /* Loading */
-        .loader { width: 12px; height: 12px; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: none; animation: rotation 1s linear infinite; margin-left: 10px; }
-        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+<style>
+body{background:#000;color:#fff;font-family:Arial;margin:0}
+header{text-align:center;padding:20px;font-size:25px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:15px}
+.card{background:#111;padding:15px;border-radius:15px;text-align:center;cursor:pointer}
+.player{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);width:90%;background:#111;padding:10px;border-radius:20px;display:flex;justify-content:space-between}
+button{background:none;border:none;color:#fff;font-size:25px}
+</style>
 </head>
+
 <body>
 
-<header><div class="logo"><i class="fas fa-broadcast-tower"></i> LAMONIÊ FLOW</div></header>
+<header>📻 Lamoniê Rádio</header>
 
-<div class="container">
-    <div class="section-title"><i class="fas fa-map-marker-alt"></i> Interior do Ceará</div>
-    <div id="grid-ce" class="grid"></div>
+<div id="grid" class="grid"></div>
 
-    <div class="section-title"><i class="fas fa-city"></i> Grande São Paulo</div>
-    <div id="grid-sp" class="grid"></div>
+<div class="player">
+<div>
+<b id="t">Selecione</b><br>
+<small>AO VIVO</small>
+</div>
+<button onclick="toggle()">
+▶
+</button>
 </div>
 
-<div class="player-footer">
-    <div class="playing-info">
-        <div class="mini-cover" id="m-icon"><i class="fas fa-radio"></i></div>
-        <div class="text-info">
-            <b id="p-name">Escolha uma rádio</b>
-            <small id="p-city">Sintonize agora</small>
-        </div>
-        <div class="loader" id="loading-spinner"></div>
-    </div>
-    <div class="controls">
-        <button onclick="togglePlay()" id="master-play"><i class="fas fa-play-circle"></i></button>
-    </div>
-</div>
-
-<audio id="main-audio" style="display:none"></audio>
+<audio id="audio"></audio>
 
 <script>
-const audio = document.getElementById('main-audio');
-const playBtn = document.getElementById('master-play');
-const spinner = document.getElementById('loading-spinner');
 
-// LINKS VIA PROXY SSL (Esses links são mais fortes contra bloqueios do GitHub)
-const radios = [
-    { name: "Rádio Trapiá FM", city: "Pedra Branca - CE", url: "https://shout.brlogic.com/proxy/radiotrapia/stream", region: "CE" },
-    { name: "Sertão Central AM", city: "Pedra Branca - CE", url: "https://shout.brlogic.com/proxy/sertaocentral/stream", region: "CE" },
-    { name: "Asa Branca AM", city: "Boa Viagem - CE", url: "https://shout.brlogic.com/proxy/asabranca/stream", region: "CE" },
-    { name: "Liberdade FM", city: "Boa Viagem - CE", url: "https://shout.brlogic.com/proxy/liberdade/stream", region: "CE" },
-    
-    { name: "Jovem Pan FM", city: "São Paulo - SP", url: "https://shout.brlogic.com/proxy/jovempan/stream", region: "SP" },
-    { name: "Metropolitana", city: "São Paulo - SP", url: "https://shout.brlogic.com/proxy/metropolitana/stream", region: "SP" },
-    { name: "Mix FM SP", city: "São Paulo - SP", url: "https://mixfm.crossradio.com.br/stream", region: "SP" },
-    { name: "Alpha FM", city: "São Paulo - SP", url: "https://23113.live.streamtheworld.com/ALPHAFM_SC", region: "SP" }
-];
+const audio = document.getElementById("audio")
 
-function init() {
-    const gridCE = document.getElementById('grid-ce');
-    const gridSP = document.getElementById('grid-sp');
+async function carregar(){
 
-    radios.forEach((r, i) => {
-        const card = `
-            <div class="card" id="radio-${i}" onclick="playRadio(${i})">
-                <div class="radio-icon"><i class="fas fa-podcast"></i></div>
-                <b>${r.name}</b>
-                <span>${r.city.split(' - ')[0]}</span>
-            </div>
-        `;
-        if(r.region === "CE") gridCE.innerHTML += card;
-        else gridSP.innerHTML += card;
-    });
+let res = await fetch("https://de1.api.radio-browser.info/json/stations/bycountry/brazil?limit=20")
+let data = await res.json()
+
+document.getElementById("grid").innerHTML =
+data.map(r=>`
+<div class="card" onclick="play('${r.url_resolved}','${r.name}')">
+📻
+<b>${r.name}</b>
+</div>
+`).join("")
+
 }
 
-function playRadio(index) {
-    const r = radios[index];
-    
-    // UI Update
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-    document.getElementById(`radio-${index}`).classList.add('active');
-    document.getElementById('p-name').innerText = r.name;
-    document.getElementById('p-city').innerText = r.city;
-    spinner.style.display = 'block';
-
-    // Audio Logic
-    audio.pause();
-    audio.src = r.url;
-    audio.load();
-
-    // Promessa de play para evitar erro de segurança
-    const playPromise = audio.play();
-
-    if (playPromise !== undefined) {
-        playPromise.then(_ => {
-            spinner.style.display = 'none';
-            updateButton(true);
-        }).catch(error => {
-            spinner.style.display = 'none';
-            console.log("Erro de Autoplay");
-        });
-    }
+function play(url,nome){
+audio.src = url
+audio.load()
+audio.play().catch(()=>{
+alert("Essa rádio não liberou o stream 😢")
+})
+document.getElementById("t").innerText = nome
 }
 
-function togglePlay() {
-    if(!audio.src) return;
-    if (audio.paused) {
-        audio.play();
-        updateButton(true);
-    } else {
-        audio.pause();
-        updateButton(false);
-    }
+function toggle(){
+audio.paused ? audio.play() : audio.pause()
 }
 
-function updateButton(isPlaying) {
-    playBtn.innerHTML = isPlaying ? '<i class="fas fa-pause-circle"></i>' : '<i class="fas fa-play-circle"></i>';
-}
+carregar()
 
-// Eventos de Áudio
-audio.onplaying = () => { spinner.style.display = 'none'; updateButton(true); };
-audio.onwaiting = () => { spinner.style.display = 'block'; };
-audio.onerror = () => { 
-    spinner.style.display = 'none';
-    alert("Sinal da rádio interrompido no momento."); 
-};
-
-init();
 </script>
 
 </body>
